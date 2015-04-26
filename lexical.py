@@ -14,7 +14,7 @@ class Token(object):
         self.pos = pos
 
     def __str__(self):
-        return '%s(%s) at %s' % (self.type, self.val, self.pos)
+        return '%4s: %s(%s)' % (self.pos, self.type, self.val)
 
 class LexerError(Exception):
     def __init__(self, pos):
@@ -33,13 +33,25 @@ class Lexer(object):
             specify your rules for whitespace, or it will be
             flagged as an error.
         '''
-        self.rules = []
+        # All the regexes are concatenated into a single one
+        # with named groups. Since the group names must be valid
+        # Python identifiers, but the token types used by the
+        # user are arbitrary strings, we auto-generate the group
+        # names and map them to token types.
+        #
+        idx = 1
+        regex_parts = []
+        self.group_type = {}
 
         for regex, type in rules:
-            self.rules.append((re.compile(regex), type))
+            groupname = 'GROUP%s' % idx
+            regex_parts.append('(?P<%s>%s)' % (groupname, regex))
+            self.group_type[groupname] = type
+            idx += 1
 
+        self.regex = re.compile('|'.join(regex_parts))
         self.skip_whitespace = skip_whitespace
-        self.re_ws_skip =  re.compile('\S')
+        self.re_ws_skip = re.compile('\S')
 
     def input(self, buf):
         ''' Initialize the lexer with a buffer as input
@@ -57,22 +69,25 @@ class Lexer(object):
         '''
         if self.pos >= len(self.buf):
             return None
-        if self.skip_whitespace:
-            m = self.re_ws_skip.search(self.buf, self.pos)
-            if m:
-                self.pos = m.start()
-            else:
-                return None
+        else:
+            if self.skip_whitespace:
+                m = self.re_ws_skip.search(self.buf, self.pos)
 
-        for regex, type in self.rules:
-            m = regex.match(self.buf, self.pos)
+                if m:
+                    self.pos = m.start()
+                else:
+                    return None
+
+            m = self.regex.match(self.buf, self.pos)
             if m:
-                tok = Token(type, m.group(), self.pos)
+                groupname = m.lastgroup
+                tok_type = self.group_type[groupname]
+                tok = Token(tok_type, m.group(groupname), self.pos)
                 self.pos = m.end()
                 return tok
 
-        # If we're here, no rule has been matched
-        raise LexerError(self.pos)
+            # if we're here, no rule matched
+            raise LexerError(self.pos)
 
     def tokens(self):
         ''' Returns an iterator to the tokens found in the buffer
@@ -85,28 +100,44 @@ class Lexer(object):
 def lexical(input):
 
     rules = [
-    ('\d+',             'NUMBER'),
-    ('[a-zA-Z_]\w*',    'IDENTIFIER'),
-    ('\+',              'PLUS'),
-    ('\-',              'MINUS'),
-    ('\*',              'MULTIPLY'),
-    ('\/',              'DIVIDE'),
-    ('\(',              'LP'),
-    ('\)',              'RP'),
-    ('=',               'EQUALS'),
+    ('\d+\.\d+',                                        'NUM_F'),
+    ('\d+',                                             'NUM_I'),
+    ('int|float|void|if|else|while|return',             'KEYWORD'),
+    ('[a-zA-Z_]\w*',                                    'IDENTIFIER'),
+    ('\/\*',                                            'L COMMENT'),
+    ('\*\/',                                            'R COMMENT'),
+    ('\+',                                              'PLUS'),
+    ('\-',                                              'MINUS'),
+    ('\*',                                              'MULTIPLY'),
+    ('\/',                                              'DIVIDE'),
+    ('\(',                                              'LP'),
+    ('\)',                                              'RP'),
+    ('\{',                                              'LC'),
+    ('\}',                                              'RC'),
+    ('\[',                                              'LB'),
+    ('\]',                                              'RB'),
+    ('\!\=',                                            'N EQUALS'),
+    ('\<\=',                                            'L EQUALS'),
+    ('\<',                                              'L THAN'),
+    ('\>\=',                                            'G EQUALS'),
+    ('\>',                                              'G THAN'),
+    ('\=\=',                                            'D EQUALS'),
+    ('\=',                                              'EQUALS'),
+    ('\;',                                              'SEMICOLON'),
+    ('\,',                                              'COMMA'),
     ]
 
     lx = Lexer(rules, skip_whitespace=True)
     lx.input(input)
 
+    message = 'Lexical analysis completed successfully.\n'
     output = ''
 
     try:
         for tok in lx.tokens():
-            print(tok)
             output += str(tok) + '\n'
     except LexerError as err:
-        print('LexerError at position %s' % err.pos)
+        message = 'Error during lexical analysis.\n'
         output += 'LexerError at position %s' % err.pos
 
-    return output
+    return (message + output)
