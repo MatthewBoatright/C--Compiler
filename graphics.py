@@ -1,27 +1,35 @@
 from Tkinter import *
 from ScrolledText import *
 from lexical import *
+import ttk
+
 
 def construct():
 
     def callback():
+
+        # Lexical tab
         input = inputBox.get(1.0, END)
         message, output = lexical(input)
-        displayBox.configure(state=NORMAL)
-        displayBox.delete(1.0, END)
-        displayBox.insert(INSERT, message + output)
-        displayBox.configure(state=DISABLED)
+        lexTab = tabs['Lexical']
+        lexTab.configure(state=NORMAL)
+        lexTab.delete(1.0, END)
+        lexTab.insert(INSERT, message + output)
+        lexTab.configure(state=DISABLED)
 
-    def callback2():
-        input = inputBox.get(1.0, END)
-        message, output = lexical(input)
-        displayBox.configure(state=NORMAL)
-        displayBox.delete(1.0, END)
-        displayBox.insert(INSERT, message)
-        displayBox.configure(state=DISABLED)
+        # Syntax tab
+        synTab = tabs['Syntax']
+        synTab.configure(state=NORMAL)
+        synTab.delete(1.0, END)
+        synTab.insert(INSERT, 'Syntax not implemented yet.')
+        synTab.configure(state=DISABLED)
 
-    def callback3():
-        print 'Semantics'
+        # Semantics tab
+        semTab = tabs['Semantics']
+        semTab.configure(state=NORMAL)
+        semTab.delete(1.0, END)
+        semTab.insert(INSERT, 'Semantics not implemented yet.')
+        semTab.configure(state=DISABLED)
 
     master = Tk()
     master.title("C- Compiler")
@@ -29,25 +37,29 @@ def construct():
     # Frames
     buttonFrame = Frame(master)
     buttonFrame.grid(row=1, column=1)
+    lexFrame = Frame(master)
 
     # Labels
     Label(master, text="Input").grid(row=0, column=0)
     Label(master, text="Output").grid(row=0, column=1)
 
     # Buttons
-    lexButton = Button(buttonFrame, text='Lexical', command=callback)
-    lexButton.grid(row=0, column=0)
-    syntaxButton = Button(buttonFrame, text="Syntax", command=callback2)
-    syntaxButton.grid(row=0, column=1)
-    semanticsButton = Button(buttonFrame, text='Semantics', command=callback3)
-    semanticsButton.grid(row=0, column=2)
-    semanticsButton.configure(state=DISABLED)
+    compileButton = Button(buttonFrame, text='Compile', command=callback)
+    compileButton.grid(row=0, column=0)
 
     # Text Boxes
     inputBox = ScrolledText(master, width=50, height=40)
     inputBox.grid(row=2, column=0)
-    displayBox = ScrolledText(master, width=50, height=40)
-    displayBox.grid(row=2, column=1)
-    displayBox.configure(state=DISABLED)
+
+    # Notebook to hold tabs
+    notebook = ttk.Notebook(master)
+    notebook.grid(row=2, column=1)
+    tabs = {"Lexical": [], "Syntax": [], "Semantics": []}
+
+    for tabname in tabs:
+        tab = ScrolledText(notebook, width=50, height=40)
+        tab.configure(state=DISABLED)
+        tabs[tabname] = tab
+        notebook.add(tab, text=tabname)
 
     master.mainloop()
