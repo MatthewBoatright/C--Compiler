@@ -140,4 +140,4 @@ def lexical(input):
         message = 'Error during lexical analysis.\n'
         output += 'LexerError at position %s' % err.pos
 
-    return (message + output)
+    return (message, output)
