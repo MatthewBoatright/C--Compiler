@@ -6,11 +6,11 @@ The C- language is a subset of C used as a manageable introductory language into
 The conventions, syntax and semantics of this language can be found in Appendix A of Kenneth C. Louden's Compiler Construction text.
 
 The lexical conventions are as follows:
-KEYWORDS: int float void if else while return
-SYMBOLS: /* */ + - * / < <= > >= == != = , ; ( ) { } [ ]
-IDENTIFIER: [a-zA-Z_]\w*
-INTEGER: \d+
-FLOAT: \d+\.\d+
+* KEYWORDS: int float void if else while return
+* SYMBOLS: /* */ + - * / < <= > >= == != = , ; ( ) { } [ ]
+* IDENTIFIER: [a-zA-Z_]\w*
+* INTEGER: \d+
+* FLOAT: \d+\.\d+
 
 Example C- Program:
 
