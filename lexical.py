@@ -49,7 +49,7 @@ class Lexer(object):
             self.group_type[groupname] = type
             idx += 1
 
-        self.regex = re.compile('|'.join(regex_parts))
+        self.regex = re.compile('|'.join(regex_parts), re.DOTALL)
         self.skip_whitespace = skip_whitespace
         self.re_ws_skip = re.compile('\S')
 
@@ -104,8 +104,7 @@ def lexical(input):
     ('\d+',                                             'NUM_I'),
     ('int|float|void|if|else|while|return',             'KEYWORD'),
     ('[a-zA-Z_]\w*',                                    'IDENTIFIER'),
-    ('\/\*',                                            'L COMMENT'),
-    ('\*\/',                                            'R COMMENT'),
+    ('\/\*(.*)\*\/',                                    'COMMENT'),
     ('\+',                                              'PLUS'),
     ('\-',                                              'MINUS'),
     ('\*',                                              'MULTIPLY'),
@@ -135,7 +134,8 @@ def lexical(input):
 
     try:
         for tok in lx.tokens():
-            output += str(tok) + '\n'
+            if tok.type != 'COMMENT':
+                output += str(tok) + '\n'
     except LexerError as err:
         message = 'Error during lexical analysis.\n'
         output += 'LexerError at position %s' % err.pos
