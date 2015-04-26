@@ -14,6 +14,7 @@ The lexical conventions are as follows:
 
 Example C- Program:
 
+```
 int gcd (int u, int v)
 {
 	if (v==0) return u;
@@ -27,3 +28,4 @@ void main(void)
 	x = input(); y = input();
 	output(gcd(x,y));
 }
+```
