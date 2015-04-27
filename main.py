@@ -25,28 +25,30 @@ class Token(object):
     def getPos(self):
         return self.pos
 
-class Tree(object):
-    ''' Tree structure: Parent, Children
-    '''
-    def __init__(self):
-        print 'New tree'
-        self.root = Node()
-
-    def addChild(self, node):
-        pass
-
 class Node(object):
     ''' Node structure:
+            Val: The name of the node (the rule for terminals or the token value for non-terminals)
+            Depth: The depth of the current node (starts at 0)
+            Type: Terminal (as 'T') or Non-Terminal (as 'NT')
+            Token: A token object (only if the type is NT)
     '''
-    def __init__(self, tok=None):
-        if tok != None:
-            self.type = tok.getType()
-            self.val = tok.getVal()
-            self.pos = tok.getPos()
+    c_num = 0
+
+    def __init__(self, parent, val, depth, type, token=None):
+        self.parent = parent
+        self.val = val
+        self.depth = depth
+        self.type = type
+        if token != None:
+            self.token = token
         self.children = []
 
     def __str__(self):
-        return 'NODE: %10s %10s %10s' % (self.type, self.val, self.pos)
+        return 'NODE: %10s %10s %10s' % (self.val, self.depth, self.type)
+
+    def addChild(self, node):
+        self.children.append(node)
+        self.c_num += 1
 
 def main():
     construct()
