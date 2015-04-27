@@ -4,17 +4,7 @@ http://eli.thegreenplace.net/2013/06/25/regex-based-lexical-analysis-in-python-a
 '''
 
 import re
-
-class Token(object):
-    ''' Token structure: Type, Value, Position.
-    '''
-    def __init__(self, type, val, pos):
-        self.type = type
-        self.val = val
-        self.pos = pos
-
-    def __str__(self):
-        return '%4s: %s(%s)' % (self.pos, self.type, self.val)
+from main import Token
 
 class LexerError(Exception):
     def __init__(self, pos):
@@ -105,22 +95,15 @@ def lexical(input):
     ('int|float|void|if|else|while|return',             'KEYWORD'),
     ('[a-zA-Z_]\w*',                                    'IDENTIFIER'),
     ('\/\*(.*)\*\/',                                    'COMMENT'),
-    ('\+',                                              'PLUS'),
-    ('\-',                                              'MINUS'),
-    ('\*',                                              'MULTIPLY'),
-    ('\/',                                              'DIVIDE'),
+    ('\+|\-',                                           'ADDOP'),
+    ('\*|\/',                                           'MULOP'),
+    ('\!\=|\<\=|\>\=|\<|\>|\=\=',                       'RELOP'),
     ('\(',                                              'LP'),
     ('\)',                                              'RP'),
     ('\{',                                              'LC'),
     ('\}',                                              'RC'),
     ('\[',                                              'LB'),
     ('\]',                                              'RB'),
-    ('\!\=',                                            'N EQUALS'),
-    ('\<\=',                                            'L EQUALS'),
-    ('\<',                                              'L THAN'),
-    ('\>\=',                                            'G EQUALS'),
-    ('\>',                                              'G THAN'),
-    ('\=\=',                                            'D EQUALS'),
     ('\=',                                              'EQUALS'),
     ('\;',                                              'SEMICOLON'),
     ('\,',                                              'COMMA'),
@@ -131,13 +114,15 @@ def lexical(input):
 
     message = 'Lexical analysis completed successfully.\n'
     output = ''
+    tokens = []
 
     try:
         for tok in lx.tokens():
             if tok.type != 'COMMENT':
+                tokens.append(tok)
                 output += str(tok) + '\n'
     except LexerError as err:
         message = 'Error during lexical analysis.\n'
         output += 'LexerError at position %s' % err.pos
 
-    return (message, output)
+    return (message, output, tokens)

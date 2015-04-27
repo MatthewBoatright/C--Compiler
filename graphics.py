@@ -1,6 +1,8 @@
+from main import *
 from Tkinter import *
 from ScrolledText import *
 from lexical import *
+from syntax import *
 import ttk
 
 
@@ -8,9 +10,10 @@ def construct():
 
     def callback():
 
-        # Lexical tab
         input = inputBox.get(1.0, END)
-        message, output = lexical(input)
+
+        # Lexical tab
+        message, output, tokens = lexical(input)
         lexTab = tabs['Lexical']
         lexTab.configure(state=NORMAL)
         lexTab.delete(1.0, END)
@@ -18,10 +21,11 @@ def construct():
         lexTab.configure(state=DISABLED)
 
         # Syntax tab
+        message, output = syntax(tokens)
         synTab = tabs['Syntax']
         synTab.configure(state=NORMAL)
         synTab.delete(1.0, END)
-        synTab.insert(INSERT, 'Syntax not implemented yet.')
+        synTab.insert(INSERT, message + output)
         synTab.configure(state=DISABLED)
 
         # Semantics tab
@@ -37,7 +41,6 @@ def construct():
     # Frames
     buttonFrame = Frame(master)
     buttonFrame.grid(row=1, column=1)
-    lexFrame = Frame(master)
 
     # Labels
     Label(master, text="Input").grid(row=0, column=0)
@@ -55,8 +58,9 @@ def construct():
     notebook = ttk.Notebook(master)
     notebook.grid(row=2, column=1)
     tabs = {"Lexical": [], "Syntax": [], "Semantics": []}
+    tab_order = ["Lexical", "Syntax", "Semantics"]
 
-    for tabname in tabs:
+    for tabname in tab_order:
         tab = ScrolledText(notebook, width=50, height=40)
         tab.configure(state=DISABLED)
         tabs[tabname] = tab
