@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="50f6e4bb-1fa9-49e2-ae3f-c4756dcabdd1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/syntaxRules.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lexical.py" afterPath="$PROJECT_DIR$/lexical.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/syntax.py" afterPath="$PROJECT_DIR$/syntax.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="C- Compiler.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,8 +42,8 @@
       <file leaf-file-name="lexical.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lexical.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2261">
-              <caret line="99" column="65" selection-start-line="99" selection-start-column="65" selection-end-line="99" selection-end-column="65" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1164" max-vertical-offset="2278">
+              <caret line="94" column="64" selection-start-line="94" selection-start-column="64" selection-end-line="94" selection-end-column="64" />
               <folding>
                 <element signature="e#163#172#0" expanded="true" />
               </folding>
@@ -64,8 +66,8 @@
       <file leaf-file-name="syntax.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/syntax.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.93435115" vertical-offset="0" max-vertical-offset="816">
-              <caret line="36" column="30" selection-start-line="36" selection-start-column="30" selection-end-line="36" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.24732825" vertical-offset="263" max-vertical-offset="2499">
+              <caret line="25" column="24" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -79,9 +81,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/lexical.py" />
         <option value="$PROJECT_DIR$/graphics.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/syntaxRules.py" />
+        <option value="$PROJECT_DIR$/lexical.py" />
         <option value="$PROJECT_DIR$/syntax.py" />
       </list>
     </option>
@@ -426,13 +429,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lexical.py">
+    <entry file="file://$PROJECT_DIR$/syntaxRules.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1368" max-vertical-offset="2261">
-          <caret line="99" column="65" selection-start-line="99" selection-start-column="65" selection-end-line="99" selection-end-column="65" />
-          <folding>
-            <element signature="e#163#172#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -444,10 +445,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lexical.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1453" max-vertical-offset="2278">
+          <caret line="94" column="64" selection-start-line="94" selection-start-column="64" selection-end-line="94" selection-end-column="64" />
+          <folding>
+            <element signature="e#163#172#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/syntax.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.93435115" vertical-offset="0" max-vertical-offset="816">
-          <caret line="36" column="30" selection-start-line="36" selection-start-column="30" selection-end-line="36" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.24732825" vertical-offset="263" max-vertical-offset="2499">
+          <caret line="25" column="24" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
           <folding />
         </state>
       </provider>

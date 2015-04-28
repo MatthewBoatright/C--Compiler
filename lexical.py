@@ -72,7 +72,7 @@ class Lexer(object):
             if m:
                 groupname = m.lastgroup
                 tok_type = self.group_type[groupname]
-                tok = Token(tok_type, m.group(groupname), self.pos)
+                tok = Token(tok_type, m.group(groupname).strip(), self.pos)
                 self.pos = m.end()
                 return tok
 
@@ -92,7 +92,8 @@ def lexical(input):
     rules = [
     ('\d+\.\d+',                                        'NUM_F'),
     ('\d+',                                             'NUM_I'),
-    ('int|float|void|if|else|while|return',             'KEYWORD'),
+    ('int\s|float\s|void\s',                            'TYPE'),
+    ('if\s|else\s|while\s|return\s',                    'KEYWORD'),
     ('[a-zA-Z_]\w*',                                    'IDENTIFIER'),
     ('\/\*(.*)\*\/',                                    'COMMENT'),
     ('\+|\-',                                           'ADDOP'),
