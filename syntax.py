@@ -328,53 +328,221 @@ def syntax(input):
         node = Node(None, "R", d, 'NT')
         currNode.addChild(node)
 
+        if isType('IDENTIFIER'):
+            accept(node)
+            return Rp(node)
+        elif isVal('('):
+            accept(node)
+            if R(node):
+                if isVal(')'):
+                    accept(node)
+                    return Xp(node)and Vp(node) and Tp(node)
+        elif isType('NUM_I') or isType('NUM_F'):
+            accept(node)
+            return Xp(node) and Vp(node) and Tp(node)
+
+        return False
+
     def Rp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Rp", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal('('):
+            accept(node)
+            if Beta(node):
+                if isVal(')'):
+                    accept(node)
+                    return Xp(node) and Vp(node) and Tp(node)
+        elif Sp(node):
+            return Re(node)
+
+        return False
 
     def Re(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Re", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal('='):
+            accept(node)
+            return R(node)
+
+        return Xp(node) and Vp(node) and Tp(node)
 
     def Sp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Sp", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal('['):
+            accept(node)
+            if R(node):
+                if isVal(']'):
+                    accept(node)
+                    return True
+            return False
+        else:
+            empty(node)
+
+        return True
 
     def Tp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Tp", d, 'NT')
+        currNode.addChild(node)
+
+        if U(node):
+            return V(node)
+        else:
+            empty(node)
+
+        return True
 
     def U(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "U", d, 'NT')
+        currNode.addChild(node)
+
+        if isType('RELOP'):
+            accept(node)
+            return True
+
+        return False
 
     def V(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "V", d, 'NT')
+        currNode.addChild(node)
+
+        return X(node) and V(node)
 
     def Vp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Vp", d, 'NT')
+        currNode.addChild(node)
+
+        if W(node):
+            if X(node):
+                return Vp(node)
+            return False
+        else:
+            empty(node)
+
+        return True
 
     def W(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "W", d, 'NT')
+        currNode.addChild(node)
+
+        if isType('ADDOP'):
+            accept(node)
+            return True
+
+        return False
 
     def X(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "X", d, 'NT')
+        currNode.addChild(node)
+
+        return Z(node) and Xp(node)
 
     def Xp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Xp", d, 'NT')
+        currNode.addChild(node)
+
+        if Y(node):
+            if Z(node):
+                return Xp(node)
+            return False
+        else:
+            empty(node)
+
+        return True
 
     def Y(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Y", d, 'NT')
+        currNode.addChild(node)
+
+        if isType('MULOP'):
+            accept(node)
+            return True
+
+        return False
 
     def Z(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Z", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal('('):
+            accept(node)
+            if R(node):
+                if isVal(')'):
+                    accept(node)
+                    return True
+        elif isType('IDENTIFIER'):
+            accept(node)
+            return Zp(node)
+        elif isType('NUM_I') or isType('NUM_F'):
+            accept(node)
+            return True
+
+        return False
 
     def Zp(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "Zp", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal('('):
+            accept(node)
+            if Beta(node):
+                if isVal(')'):
+                    accept(node)
+                    return True
+        elif Sp(node):
+            return True
+
+        return False
 
     def Beta(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "BETA", d, 'NT')
+        currNode.addChild(node)
+
+        if Gamma(node):
+            return True
+        else:
+            empty(node)
+
+        return True
 
     def Gamma(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "GAMMA", d, 'NT')
+        currNode.addChild(node)
+
+        return R(node) and Gammap(node)
 
     def Gammap(currNode):
-        pass
+        d = currNode.depth + 1
+        node = Node(None, "GAMMAp", d, 'NT')
+        currNode.addChild(node)
+
+        if isVal(','):
+            accept(node)
+            if R(node):
+                return Gammap(node)
+            return False
+        else:
+            empty(node)
+
+        return True
     # End rules
 
     if A():
