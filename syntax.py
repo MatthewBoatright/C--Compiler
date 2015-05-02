@@ -25,7 +25,7 @@ def syntax(input):
 
     def empty(currNode):
         d = currNode.depth + 1
-        node = Node(None, u"\u03B5", d, 'T')
+        node = Node(None, '@', d, 'T')
         currNode.addChild(node)
 
     def A():
@@ -574,7 +574,10 @@ def traverse(currNode):
     for x in range (0, currNode.depth):
         line += '_'
 
-    line += currNode.val + '\n'
+    if currNode.type == 'NT':
+        line += currNode.val + '\n'
+    else:
+        line += "{0} <- D: {1}\n".format(currNode.val, currNode.depth)
 
     if currNode.c_num > 0:
         currNode.children.reverse()
