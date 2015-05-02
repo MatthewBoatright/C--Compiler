@@ -135,6 +135,8 @@ def syntax(input):
                 accept(node)
                 return Ip(node) and Hp(node)
 
+        return False
+
     def Gp(currNode):
         d = currNode.depth + 1
         node = Node(None, "Gp", d, 'NT')
@@ -208,8 +210,10 @@ def syntax(input):
         node = Node(None, "K", d, 'NT')
         currNode.addChild(node)
 
-        if D(node):
-            return K(node)
+        if isType('TYPE'):
+            if D(node):
+                return K(node)
+            return False
         else:
             empty(node)
 
@@ -220,8 +224,10 @@ def syntax(input):
         node = Node(None, "L", d, 'NT')
         currNode.addChild(node)
 
-        if M(node):
-            return L(node)
+        if not isVal('}'):
+            if M(node):
+                return L(node)
+            return False
         else:
             empty(node)
 
@@ -232,10 +238,17 @@ def syntax(input):
         node = Node(None, "M", d, 'NT')
         currNode.addChild(node)
 
-        if N(node) or J(node) or O(node) or P(node) or Q(node):
-            return True
 
-        return False
+        if isVal('{'):
+            return J(node)
+        elif isVal('if'):
+            return O(node)
+        elif isVal('while'):
+            return P(node)
+        elif isVal('return'):
+            return Q(node)
+        else:
+            return N(node)
 
     def N(currNode):
         d = currNode.depth + 1
@@ -415,7 +428,7 @@ def syntax(input):
         node = Node(None, "V", d, 'NT')
         currNode.addChild(node)
 
-        return X(node) and V(node)
+        return X(node) and Vp(node)
 
     def Vp(currNode):
         d = currNode.depth + 1
