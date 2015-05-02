@@ -4,6 +4,7 @@ Project: C- Compiler
 '''
 
 from graphics import *
+import copy
 
 class Token(object):
     ''' Token structure: Type, Value, Position.
@@ -52,6 +53,27 @@ class Node(object):
 
 def main():
     construct()
+
+def traverse(currNode):
+    line = ''
+
+    if currNode.depth > 0:
+        line += '|'
+    for x in range (0, currNode.depth):
+        line += '_'
+
+    if currNode.type == 'NT':
+        line += currNode.val + '\n'
+    else:
+        line += "{0} <- D: {1}\n".format(currNode.val, currNode.depth)
+
+    if currNode.c_num > 0:
+        currNode.children.reverse()
+        copy_list = copy.deepcopy(currNode.children)
+        for x in range (0, currNode.c_num):
+            line += traverse(copy_list.pop())
+
+    return line
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,5 @@
-from main import Node
+from main import Node, traverse
+import copy
 
 def syntax(input):
 
@@ -562,26 +563,8 @@ def syntax(input):
         message = 'Syntax completed successfully.\n'
     else:
         message = 'Error during syntax analysis.\n'
+
+    newRoot = None
     output = traverse(root)
 
-    return message, output
-
-def traverse(currNode):
-    line = ''
-
-    if currNode.depth > 0:
-        line += '|'
-    for x in range (0, currNode.depth):
-        line += '_'
-
-    if currNode.type == 'NT':
-        line += currNode.val + '\n'
-    else:
-        line += "{0} <- D: {1}\n".format(currNode.val, currNode.depth)
-
-    if currNode.c_num > 0:
-        currNode.children.reverse()
-        for x in range (0, currNode.c_num):
-            line += traverse(currNode.children.pop())
-
-    return line
+    return message, output, root

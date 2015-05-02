@@ -1,8 +1,9 @@
 from main import *
 from Tkinter import *
 from ScrolledText import *
-from lexical import *
-from syntax import *
+from lexical import lexical
+from syntax import syntax
+from semantic import semantic
 import ttk
 
 
@@ -21,7 +22,7 @@ def construct():
         lexTab.configure(state=DISABLED)
 
         # Syntax tab
-        message, output = syntax(tokens)
+        message, output, root = syntax(tokens)
         synTab = tabs['Syntax']
         synTab.configure(state=NORMAL)
         synTab.delete(1.0, END)
@@ -29,10 +30,11 @@ def construct():
         synTab.configure(state=DISABLED)
 
         # Semantics tab
+        message = semantic(root)
         semTab = tabs['Semantics']
         semTab.configure(state=NORMAL)
         semTab.delete(1.0, END)
-        semTab.insert(INSERT, 'Semantics not implemented yet.')
+        semTab.insert(INSERT, message)
         semTab.configure(state=DISABLED)
 
     master = Tk()
