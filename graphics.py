@@ -9,6 +9,17 @@ import ttk
 
 def construct():
 
+    sample_prog = '''int main (void)
+{
+    int x;
+    int y;
+
+    x = 1 * (2 + 3);
+    y = x + 1;
+
+    return x + y;
+}'''
+
     def callback():
 
         input = inputBox.get(1.0, END)
@@ -55,6 +66,7 @@ def construct():
     # Text Boxes
     inputBox = ScrolledText(master, width=50, height=40)
     inputBox.grid(row=2, column=0)
+    inputBox.insert(INSERT, sample_prog)
 
     # Notebook to hold tabs
     notebook = ttk.Notebook(master)

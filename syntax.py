@@ -21,7 +21,7 @@ def syntax(input):
         if len(input) > 0:
             tok = input.pop()
             d = currNode.depth + 1
-            node = Node(tok, tok.val, d, 'T')
+            node = Node(None, tok.val, d, 'T', tok)
             currNode.addChild(node)
 
     def empty(currNode):
@@ -30,7 +30,7 @@ def syntax(input):
         currNode.addChild(node)
 
     def A():
-        return B(root)
+        return (B(root) and len(input) == 0)
 
     def B(currNode):
         d = currNode.depth + 1

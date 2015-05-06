@@ -51,6 +51,9 @@ class Node(object):
         self.children.append(node)
         self.c_num += 1
 
+    def getToken(self):
+        return self.token
+
 def main():
     construct()
 
