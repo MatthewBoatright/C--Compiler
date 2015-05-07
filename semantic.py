@@ -28,10 +28,11 @@ errors = {
 'ARRAY_VAR': 'Cannot initialize array with variable length.\n'
 }
 
+# Globals
+line = 0
+
 def semantic(root):
-    '''
-    :param root: the root of the parse tree
-    '''
+
     Symbols = {}
     sym_list = []
     error = ''
@@ -40,6 +41,8 @@ def semantic(root):
     currTok = None
     currDepth = None
     sem_pass = True
+    global line
+    line = 0
 
     def sym_traverse(currNode):
 
@@ -61,6 +64,7 @@ def semantic(root):
             return None, None
 
     def add(sym):
+        print 'Adding symbol: %s' % sym
         if sym.scope not in Symbols:
             Symbols[scope] = {name: sym}
             return True
@@ -70,11 +74,49 @@ def semantic(root):
         else:
             return False
 
-    def quad(scope, op, arg1, arg2, res):
+    def addOutput(msg):
+        global line
+        line += 1
+        return '%3s: %s' % (line, msg)
+
+    def quadhead(scope, op, arg1, arg2, res):
         return '%3s: %5s %10s %10s %10s\n' % (scope, op, arg1, arg2, res)
 
+    def quad(op, arg1, arg2, res):
+        return '%5s %10s %10s %10s\n' % (op, arg1, arg2, res)
+
+    def varDec(type, name, scope):
+        size = 4
+        sym = Symbol('var', type, name, scope, size)
+        print sym
+        if not add(sym):
+            error = errors['VAR_DEC']
+            print error
+            return False, error
+        else:
+            return True, quad('ALLOC', size, '', name)
+
+    def arrayDec(type, name, scope):
+        currTok, currDepth = nextTok()
+        nextTok()   # RB ]
+
+        size = int(currTok.val) * 4
+        sym = Symbol('var', type, name, scope, size)
+        if not add(sym):
+            error = errors['VAR_DEC']
+            return False, error
+        else:
+            return True, quad('ALLOC', size, '', name)
+
+    def funcDec(func):
+        if not add(func):
+            error = errors['FUNC_DEC']
+            return False, error
+        else:
+            return True, quad('FUNC', func.name, func.type, func.params)
+
     sym_traverse(root)
-    output = quad('SCP', 'OP', 'ARG1', 'ARG2', 'RES')
+    output = quadhead('LNE', 'OP', 'ARG1', 'ARG2', 'RES')
 
     sym_list.reverse()
     while (len(sym_list) > 0 and sem_pass == True):
@@ -93,30 +135,72 @@ def semantic(root):
 
             # If semicolon is next, then this is a variable declaration
             if currTok.type == 'SEMICOLON':
-                size = 4
-                sym = Symbol('var', type, name, scope, size)
-                if not add(sym):
-                    sem_pass = False
-                    error = errors['VAR_DEC']
+                sem_pass, msg = varDec(type, name, scope)
+                if sem_pass:
+                    output += addOutput(msg)
                 else:
-                    output += quad(scope, 'ALLOC', size, '', name)
+                    error = msg
 
             # If a square bracket is next then this is an array declaration
             elif currTok.type == 'LB':
-                currTok, currDepth = nextTok()
-                nextTok()   # RB ]
+                sem_pass, msg = arrayDec(type, name, scope)
                 nextTok()   # SEMICOLON ;
-
-                size = int(currTok.val) * 4
-                sym = Symbol('var', type, name, scope, size)
-                if not add(sym):
-                    sem_pass = False
-                    error = errors['VAR_DEC']
+                if sem_pass:
+                    output += addOutput(msg)
                 else:
-                    output += quad(scope, 'ALLOC', size, '', name)
+                    error = msg
+
+            # If an open parenthesis then this is a function declaration
+            elif currTok.type == 'LP':
+                params = 0
+                fname = name
+                ftype = type
+                var_list = []
+                currTok, currDepth = nextTok()
+
+                while (currTok.type != 'RP'):
+                    # TYPE or []
+                    if currTok.type == 'LB':
+                        nextTok()   # RB ]
+                    elif currTok.type == 'TYPE':
+                        type = currTok.val
+                        currTok, currDepth = nextTok()
+
+                        # ID , or )
+                        if currTok.type == 'RP':
+                            break
+
+                        # If ID, then this is a variable declaration
+                        elif currTok.type == 'IDENTIFIER':
+                            params += 1
+                            name = currTok.val
+
+                            sem_pass, msg = varDec(type, name, scope + 1)
+                            if sem_pass:
+                                var_list.append(msg)
+                            else:
+                                error = msg
+                                print error
+
+                    currTok, currDepth = nextTok()
 
 
-        #
+                func = Symbol('func', ftype, fname, scope, params=params)
+                sem_pass, msg = funcDec(func)
+
+                if sem_pass:
+                    output += addOutput(msg)
+
+                    if len(var_list) > 0:
+                        output += addOutput(quad('PARAM', '', '', ''))
+                        var_list.reverse()
+                        while var_list:
+                            output += addOutput(var_list.pop())
+
+                else:
+                    error = msg
+
+        # Scope change
         elif currTok.getType() == 'LC':
             scope += 1
         elif currTok.getType() == 'RC':
