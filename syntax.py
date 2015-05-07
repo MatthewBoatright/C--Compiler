@@ -561,10 +561,12 @@ def syntax(input):
 
     if A():
         message = 'Syntax completed successfully.\n'
+        syn_pass = True
     else:
         message = 'Error during syntax analysis.\n'
+        syn_pass = False
 
     newRoot = None
     output = traverse(root)
 
-    return message, output, root
+    return message, output, root, syn_pass

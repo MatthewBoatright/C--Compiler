@@ -33,7 +33,7 @@ def construct():
         lexTab.configure(state=DISABLED)
 
         # Syntax tab
-        message, output, root = syntax(tokens)
+        message, output, root, syn_pass = syntax(tokens)
         synTab = tabs['Syntax']
         synTab.configure(state=NORMAL)
         synTab.delete(1.0, END)
@@ -41,7 +41,10 @@ def construct():
         synTab.configure(state=DISABLED)
 
         # Semantics tab
-        message = semantic(root)
+        if syn_pass:
+            message = semantic(root)
+        else:
+            message = "Couldn't perform semantic analysis"
         semTab = tabs['Semantics']
         semTab.configure(state=NORMAL)
         semTab.delete(1.0, END)

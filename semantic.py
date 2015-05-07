@@ -23,8 +23,9 @@ class Symbol(object):
 
 # Error messages
 errors = {
-'VAR_DEC': 'Variable already declared\n',
-'FUNC_DEC': 'Function already declared\n',
+'VAR_DEC': 'Variable already declared.\n',
+'FUNC_DEC': 'Function already declared.\n',
+'ARRAY_VAR': 'Cannot initialize array with variable length.\n'
 }
 
 def semantic(root):
@@ -50,8 +51,11 @@ def semantic(root):
                 sym_traverse(copy_list.pop())
 
     def nextTok():
-        curr = sym_list.pop()
-        return curr.pop(), curr.pop()
+        if len(sym_list) > 0:
+            curr = sym_list.pop()
+            return curr.pop(), curr.pop()
+        else:
+            return None, None
 
     def add(sym):
         if (sym.name, sym.scope) not in Symbols:
@@ -93,18 +97,15 @@ def semantic(root):
 
             # If a square bracket is next then this is an array declaration
             elif currTok.type == 'LB':
-                exp = []
                 currTok, currDepth = nextTok()
 
-                while (currTok.type != 'RB'):
-                    exp.append([currDepth, currTok])
-                    currTok, currDepth = nextTok()
-
-                if len(exp) == 1:
-                    sym = Symbol('var', type, name, scope, 4 * exp.pop())
-                    if not add(sym):
-                        sem_pass = False
-                        error = errors['VAR_DEC']
+                size = int(currTok.val) * 4
+                sym = Symbol('var', type, name, scope, size)
+                if not add(sym):
+                    sem_pass = False
+                    error = errors['VAR_DEC']
+                else:
+                    output += quad(scope, 'ALLOC', size, '', name)
 
         #
         elif currTok.getType() == 'LC':
@@ -117,4 +118,4 @@ def semantic(root):
     else:
         message = 'Error during semantic analysis.\n' + error
 
-    return message + output
+    return message + output + str(Symbols.keys())
