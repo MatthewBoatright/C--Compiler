@@ -29,6 +29,9 @@ errors = {
 }
 
 def semantic(root):
+    '''
+    :param root: the root of the parse tree
+    '''
     Symbols = {}
     sym_list = []
     error = ''
@@ -58,8 +61,11 @@ def semantic(root):
             return None, None
 
     def add(sym):
-        if (sym.name, sym.scope) not in Symbols:
-            Symbols[name, scope] = sym
+        if sym.scope not in Symbols:
+            Symbols[scope] = {name: sym}
+            return True
+        elif sym.name not in Symbols[scope]:
+            Symbols[scope][name] = sym
             return True
         else:
             return False
@@ -115,8 +121,7 @@ def semantic(root):
             scope += 1
         elif currTok.getType() == 'RC':
             print 'Removing symbols from scope %s' % scope
-            #print Symbols.keys().index(scope)
-            #Symbols = dict(k for k in Symbols if k[0] != scope)
+            Symbols.pop(scope, None)
             print Symbols
             scope -= 1
 
