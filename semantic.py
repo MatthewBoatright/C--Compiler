@@ -98,6 +98,8 @@ def semantic(root):
             # If a square bracket is next then this is an array declaration
             elif currTok.type == 'LB':
                 currTok, currDepth = nextTok()
+                nextTok()   # RB ]
+                nextTok()   # SEMICOLON ;
 
                 size = int(currTok.val) * 4
                 sym = Symbol('var', type, name, scope, size)
@@ -107,10 +109,15 @@ def semantic(root):
                 else:
                     output += quad(scope, 'ALLOC', size, '', name)
 
+
         #
         elif currTok.getType() == 'LC':
             scope += 1
         elif currTok.getType() == 'RC':
+            print 'Removing symbols from scope %s' % scope
+            #print Symbols.keys().index(scope)
+            #Symbols = dict(k for k in Symbols if k[0] != scope)
+            print Symbols
             scope -= 1
 
     if sem_pass:
