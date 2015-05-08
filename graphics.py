@@ -14,8 +14,8 @@ def construct():
     int x;
     int y;
 
-    x = 1 * (2 + 3);
-    y = x + 1;
+    x = (1 + 2) * (3 / 4);
+    y = 1 + 2 * 3 - 4 / 5;
 
     return x + y;
 }'''

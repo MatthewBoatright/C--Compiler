@@ -25,7 +25,9 @@ class Symbol(object):
 errors = {
 'VAR_DEC': 'Variable already declared.\n',
 'FUNC_DEC': 'Function already declared.\n',
-'ARRAY_VAR': 'Cannot initialize array with variable length.\n'
+'ARRAY_VAR': 'Cannot initialize array with variable length.\n',
+'NULL_VAR': 'Referenced variable not found.\n',
+'NULL_FUNC': 'Referenced function not found.\n',
 }
 
 # Globals
@@ -64,14 +66,18 @@ def semantic(root):
             return None, None
 
     def add(sym):
-        print 'Adding symbol: %s' % sym
+        #print '\nCurrent symbols:\n %s' % str(Symbols)
+        #print 'Adding symbol: %s' % sym
         if sym.scope not in Symbols:
-            Symbols[scope] = {name: sym}
+            Symbols[sym.scope] = {sym.name: sym}
+            #print 'Added new scope:\n %s\n' % str(Symbols)
             return True
-        elif sym.name not in Symbols[scope]:
-            Symbols[scope][name] = sym
+        elif sym.name not in Symbols[sym.scope]:
+            Symbols[sym.scope][sym.name] = sym
+            #print 'Added to current scope:\n %s\n' % str(Symbols)
             return True
         else:
+            #print 'Failed add:\n %s\n' % str(Symbols)
             return False
 
     def addOutput(msg):
@@ -85,23 +91,21 @@ def semantic(root):
     def quad(op, arg1, arg2, res):
         return '%5s %10s %10s %10s\n' % (op, arg1, arg2, res)
 
-    def varDec(type, name, scope):
+    def varDec(type, name, _scope):
         size = 4
-        sym = Symbol('var', type, name, scope, size)
-        print sym
+        sym = Symbol('var', type, name, _scope, size)
         if not add(sym):
             error = errors['VAR_DEC']
-            print error
             return False, error
         else:
             return True, quad('ALLOC', size, '', name)
 
-    def arrayDec(type, name, scope):
+    def arrayDec(type, name, _scope):
         currTok, currDepth = nextTok()
         nextTok()   # RB ]
 
         size = int(currTok.val) * 4
-        sym = Symbol('var', type, name, scope, size)
+        sym = Symbol('var', type, name, _scope, size)
         if not add(sym):
             error = errors['VAR_DEC']
             return False, error
@@ -114,6 +118,38 @@ def semantic(root):
             return False, error
         else:
             return True, quad('FUNC', func.name, func.type, func.params)
+
+    def eval(exp_list):
+        max_i = 0
+        max_d = -1
+        max_tok = ''
+        do = False
+
+        for i, entry in enumerate(exp_list):
+            print str(entry[0]) + ' ' + str(entry[1])
+
+            d = entry[0]
+            tok = entry[1]
+
+            if d >= max_d:
+                max_i = i
+                max_d = d
+                max_tok = tok
+            else:
+                do = True
+
+            if do or i == len(exp_list) - 1:
+                one = exp_list[max_i - 2]
+                two = exp_list[max_i - 1]
+                three = exp_list[max_i]
+
+                print '%s %s %s' % (str(one), str(two), str(three))
+                del exp_list[max_i]
+                del exp_list[max_i - 1]
+                exp_list[max_i - 2] = [one[0], 'temp']
+
+                return exp_list
+
 
     sym_traverse(root)
     output = quadhead('LNE', 'OP', 'ARG1', 'ARG2', 'RES')
@@ -159,23 +195,22 @@ def semantic(root):
                 currTok, currDepth = nextTok()
 
                 while (currTok.type != 'RP'):
-                    # TYPE or []
-                    if currTok.type == 'LB':
-                        nextTok()   # RB ]
-                    elif currTok.type == 'TYPE':
+                    # Check to see if at the start of declaration
+                    if currTok.type == 'TYPE':
+                        # TYPE
                         type = currTok.val
                         currTok, currDepth = nextTok()
 
-                        # ID , or )
+                        # Break if end of parameters
                         if currTok.type == 'RP':
                             break
 
-                        # If ID, then this is a variable declaration
+                        # NAME
                         elif currTok.type == 'IDENTIFIER':
                             params += 1
                             name = currTok.val
 
-                            sem_pass, msg = varDec(type, name, scope + 1)
+                            sem_pass, msg = varDec(type, name, (int(scope) + 1))
                             if sem_pass:
                                 var_list.append(msg)
                             else:
@@ -200,6 +235,30 @@ def semantic(root):
                 else:
                     error = msg
 
+        # Variable/Function reference
+        elif currTok.type == 'IDENTIFIER':
+
+            # NAME
+            exp_list = []
+            name = currTok.val
+            currTok, currDepth = nextTok()
+
+            # If = then var reference
+            if currTok.type == 'EQUALS':
+
+                # Expression
+                currTok, currDepth = nextTok()
+                while currTok.type != 'SEMICOLON':
+                    if currTok.type != 'LP' and currTok.type != 'RP':
+                        exp_list.append([currDepth, currTok])
+                    currTok, currDepth = nextTok()
+
+                # Evaluate
+                while len(exp_list) > 1:
+                    exp_list = eval(exp_list)
+
+                print '\n'
+
         # Scope change
         elif currTok.getType() == 'LC':
             scope += 1
@@ -212,6 +271,6 @@ def semantic(root):
     if sem_pass:
         message = 'Semantic analysis completed successfully.\n'
     else:
-        message = 'Error during semantic analysis.\n' + error
+        message = 'ERROR: ' + error
 
-    return message + output + str(Symbols.keys())
+    return message + output
