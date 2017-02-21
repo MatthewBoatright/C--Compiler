@@ -1,6 +1,8 @@
 '''
 Author: Matthew Boatright
 Project: C- Compiler
+
+NOTE: This program is built for Python 2.X. It will not compile with the newer 3.X versions.
 '''
 
 from graphics import *
